@@ -1,24 +1,46 @@
+from player import Player # import player
+from item import Item
 from room import Room
+import random
+
+# install bracket pair colorizer
+
+stuff = {
+    'map': Item('Map', 'This will guide you throughout the game.'),
+    'sword': Item('Sword', 'This will defend you.'),
+    'flashlight': Item('Flashlight', 'This will give you light in darkness.'),
+    'armor': Item('Armor', 'This will protect you from the enemy.'),
+    'potions': Item('Potion', 'You can drink it.'),
+    'wand': Item('Wand', 'Brings magic.'),
+    'dagger': Item('Dagger', 'Brings protection.'),
+    'food': Item('Food', 'Gives you energy.'),
+    'water': Item('Water', 'Hyrdates you.')
+}
 
 # Declare all the rooms
 
 room = {
     'outside':  Room("Outside Cave Entrance",
-                     "North of you, the cave mount beckons"),
+                     "North of you, the cave mount beckons", 
+                     stuff['map']), # room is always available outside
 
-    'foyer':    Room("Foyer", """Dim light filters in from the south. Dusty
-passages run north and east."""),
+    'foyer':    Room("Foyer", 
+"""Dim light filters in from the south. Dusty passages run north and east.""", # pay attention to docstrings
+                    stuff[random.choice(list(stuff.keys()))]), # creates a random selection of items from stuff for the player to use
 
-    'overlook': Room("Grand Overlook", """A steep cliff appears before you, falling
-into the darkness. Ahead to the north, a light flickers in
-the distance, but there is no way across the chasm."""),
+    'overlook': Room("Grand Overlook", 
+"""A steep cliff appears before you, falling into the darkness. Ahead to the north, 
+a light flickers in the distance, but there is no way across the chasm.""", 
+                    stuff[random.choice(list(stuff.keys()))]),
 
-    'narrow':   Room("Narrow Passage", """The narrow passage bends here from west
-to north. The smell of gold permeates the air."""),
+    'narrow':   Room("Narrow Passage", 
+"""The narrow passage bends here from west to north. The smell of gold permeates the air.""", 
+                    stuff[random.choice(list(stuff.keys()))]),
 
-    'treasure': Room("Treasure Chamber", """You've found the long-lost treasure
-chamber! Sadly, it has already been completely emptied by
-earlier adventurers. The only exit is to the south."""),
+    'treasure': Room("Treasure Chamber", 
+"""You've found the long-lost treasure chamber! Sadly, it has already been completely 
+emptied by earlier adventurers. The only exit is to the south.""", 
+                    stuff[random.choice(list(stuff.keys()))]),
 }
 
 
@@ -38,6 +60,7 @@ room['treasure'].s_to = room['narrow']
 #
 
 # Make a new player object that is currently in the 'outside' room.
+new_player = Player("Player One", room['outside'])
 
 # Write a loop that:
 #
@@ -49,3 +72,54 @@ room['treasure'].s_to = room['narrow']
 # Print an error message if the movement isn't allowed.
 #
 # If the user enters "q", quit the game.
+
+# if you can define or describe the length of your input us a for loop (similar to for each in JS)
+# if you don't know how long your input is use a while loop, a while loop keeps running until you hit the exit condition
+# recursion
+
+direction = ''
+while direction != 'q':
+    print(f'You are in {new_player.current_room.name}')
+    print(f'There is a {new_player.current_room.stuff.name} in the room!')
+    print(f'{new_player.current_room.description}')
+    print(f'You are holding: {new_player.stuff}')
+
+    pickup_item = input(f'Do you want to take the {new_player.current_room.stuff.name}? Y/N?')
+    pickup_item = pickup_item.lower()
+    if pickup_item == 'y':
+        new_player.grab(new_player.current_room.stuff)  
+    else:
+        print(f'You chose not to pick up {new_player.current_room.stuff.name}.') # only want to print out the name of the item
+
+    # drop_item = input('Would you like to drop an item? Y/N?')
+    # drop_item = drop_item.lower()
+    # if drop_item == 'y':
+    #     item_to_drop = str(input(f'What would you like to drop? {new_player.stuff}:')) # add a colon or space at the end of each input for readability in the terminal
+    #     new_player.drop(item_to_drop.lower().strip())
+
+    direction = input('Where do you want to go? N, S, E, W or q to quit the game?') # this will always store in put as a string, can change it into an integer, float, etc.
+    direction = direction.lower()
+    if direction == 'n':
+        if new_player.current_room.n_to == None:
+            print('There is no room to the north.')
+        else:
+            new_player.current_room = new_player.current_room.n_to
+    elif direction == 'e':
+        if new_player.current_room.e_to == None:
+            print('There is no room to the east.')
+        else: 
+            new_player.current_room = new_player.current_room.e_to # reassigning variable with singe =
+    elif direction == 's':
+        if new_player.current_room.s_to == None:
+            print('There is no room to the south.')
+        else:
+            new_player.current_room = new_player.current_room.s_to
+    elif direction == 'w':
+        if new_player.current_room.w_to == None: # check to see if the room is equal to None
+            print('There is no room to the west.')
+        else: 
+            new_player.current_room = new_player.current_room.w_to
+    elif direction == 'q':
+        print('Thanks for playing!')
+    else:
+        print('This movement is not allowed.')
