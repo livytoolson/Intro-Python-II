@@ -92,7 +92,7 @@ while direction != 'q':
 
     inventory = ''
     while inventory != 'x':
-        print(f'You are holding: {new_player.stuff}.')
+        print(f'You are holding: \n{new_player.stuff}.') # \n puts everything after the 'n' onto a new line (new line character)
         inventory = input(f"""
         To get an item type 'get [ITEM_NAME]'.
         To drop an item type 'drop [ITEM_NAME]'.
