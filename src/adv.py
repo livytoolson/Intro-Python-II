@@ -6,15 +6,15 @@ import random
 # install bracket pair colorizer
 
 stuff = {
-    'map': Item('Map', 'This will guide you throughout the game.'),
-    'sword': Item('Sword', 'This will defend you.'),
-    'flashlight': Item('Flashlight', 'This will give you light in darkness.'),
-    'armor': Item('Armor', 'This will protect you from the enemy.'),
-    'potions': Item('Potion', 'You can drink it.'),
-    'wand': Item('Wand', 'Brings magic.'),
-    'dagger': Item('Dagger', 'Brings protection.'),
-    'food': Item('Food', 'Gives you energy.'),
-    'water': Item('Water', 'Hyrdates you.')
+    'map': Item('map', 'This will guide you throughout the game.'),
+    'sword': Item('sword', 'This will defend you.'),
+    'flashlight': Item('flashlight', 'This will give you light in darkness.'),
+    'armor': Item('armor', 'This will protect you from the enemy.'),
+    'potions': Item('potion', 'You can drink it.'),
+    'wand': Item('wand', 'Brings magic.'),
+    'dagger': Item('dagger', 'Brings protection.'),
+    'food': Item('food', 'Gives you energy.'),
+    'water': Item('water', 'Hyrdates you.')
 }
 
 # Declare all the rooms
@@ -22,7 +22,8 @@ stuff = {
 room = {
     'outside':  Room("Outside Cave Entrance",
                      "North of you, the cave mount beckons", 
-                     stuff['map']), # room is always available outside
+                     stuff[random.choice(list(stuff.keys()))]),
+                    #  stuff['map']), # room is always available outside
 
     'foyer':    Room("Foyer", 
 """Dim light filters in from the south. Dusty passages run north and east.""", # pay attention to docstrings
@@ -80,16 +81,45 @@ new_player = Player("Player One", room['outside'])
 direction = ''
 while direction != 'q':
     print(f'You are in {new_player.current_room.name}')
-    print(f'There is a {new_player.current_room.stuff.name} in the room!')
-    print(f'{new_player.current_room.description}')
-    print(f'You are holding: {new_player.stuff}')
-
-    pickup_item = input(f'Do you want to take the {new_player.current_room.stuff.name}? Y/N?')
-    pickup_item = pickup_item.lower()
-    if pickup_item == 'y':
-        new_player.grab(new_player.current_room.stuff)  
+    if len(new_player.current_room.stuff) > 0:
+        new_player.current_room.print_message()
     else:
-        print(f'You chose not to pick up {new_player.current_room.stuff.name}.') # only want to print out the name of the item
+        print('There is nothing here!')
+
+    # print(f'There is a {new_player.current_room.stuff.name} in the room!')
+    # print(f'{new_player.current_room.description}')
+    # print(f'You are holding: {new_player.stuff}')
+
+    inventory = ''
+    while inventory != 'x':
+        print(f'You are holding: {new_player.stuff}.')
+        inventory = input(f"""
+        To get an item type 'get [ITEM_NAME]'.
+        To drop an item type 'drop [ITEM_NAME]'.
+        Or type 'x' to stop adding and removing from your inventory.
+    """)
+
+        choice = inventory.split(' ') # this will split it by every space
+        if len(choice) >= 2:
+            active_item = choice[1].lower().strip() # strip takes care of extra spaces (& maybe extra apostraphes?)
+        if choice[0].lower() == 'get':
+            new_player.grab(stuff[active_item]) 
+            new_player.current_room.remove_item(stuff[active_item])
+        elif choice[0].lower() == 'drop':
+            new_player.drop(stuff[active_item])
+            new_player.current_room.add_item(stuff[active_item])
+        elif choice[0].lower() == 'x':
+            print('You decided not to add or remove from your inventory.')
+        else:
+            print('This command is not supported. Try again.')
+
+    # pickup_item = input(f'Do you want to take the {new_player.current_room.stuff.name}? Y/N?')
+    # pickup_item = pickup_item.lower()
+    # if pickup_item == 'y':
+    #     new_player.grab(new_player.current_room.stuff)
+    #     new_player.current_room.remove_item(new_player.current_room.stuff.name)  
+    # else:
+    #     print(f'You chose not to pick up {new_player.current_room.stuff.name}.') # only want to print out the name of the item
 
     # drop_item = input('Would you like to drop an item? Y/N?')
     # drop_item = drop_item.lower()

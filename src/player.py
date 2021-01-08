@@ -15,7 +15,7 @@ class Player:
 
 
     def grab(self, item): # item is a parameter, we don't need the class
-        self.stuff.append(item.name)
+        self.stuff.append(item)
         print('You\'ve picked up the item!')
         print('Your inventory:', self.stuff) # could also use an f string
 
